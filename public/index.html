@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shift Ledger</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🕒</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+
+<!-- AUTH SCREEN -->
+<div id="authScreen" class="auth-screen">
+  <div class="auth-card">
+    <div class="brand"><span class="mark">🕒</span><h1>Shift Ledger</h1></div>
+    <p class="auth-sub" id="authSub">Sign in to log your hours.</p>
+
+    <form id="loginForm">
+      <div class="field"><label for="loginUsername">Username</label><input id="loginUsername" autocomplete="username" required></div>
+      <div class="field"><label for="loginPassword">Password</label><input id="loginPassword" type="password" autocomplete="current-password" required></div>
+      <div class="auth-error" id="loginError"></div>
+      <button class="btn" type="submit">Sign in</button>
+    </form>
+
+    <form id="registerForm" style="display:none;">
+      <div class="field"><label for="regName">Your name</label><input id="regName" required></div>
+      <div class="field"><label for="regUsername">Username</label><input id="regUsername" autocomplete="username" required></div>
+      <div class="field"><label for="regPassword">Password</label><input id="regPassword" type="password" autocomplete="new-password" minlength="8" required></div>
+      <div class="auth-error" id="regError"></div>
+      <button class="btn" type="submit">Create account</button>
+    </form>
+
+    <button class="link-btn" id="authToggle">I don't have an account &mdash; create one</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app" style="display:none;">
+  <header class="top">
+    <div class="top-inner">
+      <div class="brand"><span class="mark">🕒</span><h1>Shift Ledger</h1></div>
+      <div class="who" id="whoBox"></div>
+    </div>
+    <nav class="tabs" id="tabs">
+      <button class="tab-btn active" data-tab="mine">My Hours</button>
+      <button class="tab-btn" data-tab="team" id="teamTabBtn" style="display:none;">Team</button>
+    </nav>
+  </header>
+
+  <div class="wrap">
+
+    <section class="panel active" id="panel-mine">
+      <h2 class="section-title">Log your hours</h2>
+      <p class="section-sub">One entry per hour, 8:00 AM to 4:00 PM. Leave a slot blank if you didn't work it.</p>
+      <div class="controls-row">
+        <div class="field"><label for="mineDate">Date</label><input type="date" id="mineDate"></div>
+      </div>
+      <div id="mineLedger" class="ledger"><div class="loading-line">Loading your log&hellip;</div></div>
+      <div class="day-total" id="mineTotal" style="display:none;">
+        <span>Hours logged this day</span><strong id="mineTotalVal">0 / 8</strong>
+      </div>
+    </section>
+
+    <section class="panel" id="panel-team">
+      <div class="export-row">
+        <div>
+          <h2 class="section-title">Team hours</h2>
+          <p class="section-sub" style="margin-bottom:0;">See who logged what, by day, month, or person.</p>
+        </div>
+        <div id="exportBox"></div>
+      </div>
+
+      <div class="subtabs" id="teamSubtabs">
+        <button class="active" data-sub="day">By day</button>
+        <button data-sub="month">By month</button>
+        <button data-sub="employee">By employee</button>
+        <button data-sub="roles" id="rolesSubBtn" style="display:none;">Manage roles</button>
+      </div>
+
+      <div id="team-day" class="team-view">
+        <div class="controls-row"><div class="field"><label for="teamDate">Date</label><input type="date" id="teamDate"></div></div>
+        <div id="teamDayTable"><div class="loading-line">Loading&hellip;</div></div>
+      </div>
+
+      <div id="team-month" class="team-view" style="display:none;">
+        <div class="controls-row"><div class="field"><label for="teamMonth">Month</label><input type="month" id="teamMonth"></div></div>
+        <div id="teamMonthTable"><div class="loading-line">Loading&hellip;</div></div>
+      </div>
+
+      <div id="team-employee" class="team-view" style="display:none;">
+        <div class="controls-row">
+          <div class="field"><label for="teamEmpSelect">Employee</label><select id="teamEmpSelect"><option>Loading&hellip;</option></select></div>
+          <div class="field"><label for="teamEmpMonth">Month</label><input type="month" id="teamEmpMonth"></div>
+        </div>
+        <div id="teamEmpTable"><div class="loading-line">Choose an employee to see their log.</div></div>
+      </div>
+
+      <div id="team-roles" class="team-view" style="display:none;">
+        <p class="section-sub">Give someone admin access so they can view team hours, or move them back to employee.</p>
+        <div id="rolesTable"><div class="loading-line">Loading&hellip;</div></div>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="/app.js"></script>
+</body>
+</html>
