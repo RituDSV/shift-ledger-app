@@ -1,5 +1,6 @@
 // middleware/auth.js — reads the httpOnly session cookie, verifies it,
-// and loads the current user onto req.user for downstream routes.
+// and loads the current user (including their department, if any) onto
+// req.user for downstream routes.
 
 const jwt = require("jsonwebtoken");
 const { pool } = require("../db");
@@ -23,7 +24,10 @@ async function requireAuth(req, res, next) {
 
   try {
     const { rows } = await pool.query(
-      "SELECT id, username, name, role FROM users WHERE id = $1",
+      `SELECT u.id, u.username, u.name, u.role, u.department_id, d.name AS department_name
+       FROM users u
+       LEFT JOIN departments d ON d.id = u.department_id
+       WHERE u.id = $1`,
       [payload.sub]
     );
     if (!rows[0]) return res.status(401).json({ error: "Account not found." });

@@ -12,7 +12,7 @@ const cookieParser = require("cookie-parser");
 
 const authRoutes = require("./routes/auth");
 const logsRoutes = require("./routes/logs");
-const adminRoutes = require("./routes/admin");
+const masterRoutes = require("./routes/master");
 
 function createApp({ preMiddleware = [] } = {}) {
   const app = express();
@@ -26,7 +26,7 @@ function createApp({ preMiddleware = [] } = {}) {
 
   app.use("/api/auth", authRoutes);
   app.use("/api/logs", logsRoutes);
-  app.use("/api/admin", adminRoutes);
+  app.use("/api/master", masterRoutes);
 
   return app;
 }

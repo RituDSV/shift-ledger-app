@@ -16,24 +16,24 @@
 <div id="authScreen" class="auth-screen">
   <div class="auth-card">
     <div class="brand"><span class="mark">🕒</span><h1>Shift Ledger</h1></div>
-    <p class="auth-sub" id="authSub">Sign in to log your hours.</p>
+    <p class="auth-sub" id="authSub">Loading&hellip;</p>
 
-    <form id="loginForm">
+    <form id="loginForm" style="display:none;">
       <div class="field"><label for="loginUsername">Username</label><input id="loginUsername" autocomplete="username" required></div>
       <div class="field"><label for="loginPassword">Password</label><input id="loginPassword" type="password" autocomplete="current-password" required></div>
       <div class="auth-error" id="loginError"></div>
       <button class="btn" type="submit">Sign in</button>
+      <p class="auth-note">Don't have a login? Ask your master admin to set one up for you.</p>
     </form>
 
-    <form id="registerForm" style="display:none;">
-      <div class="field"><label for="regName">Your name</label><input id="regName" required></div>
-      <div class="field"><label for="regUsername">Username</label><input id="regUsername" autocomplete="username" required></div>
-      <div class="field"><label for="regPassword">Password</label><input id="regPassword" type="password" autocomplete="new-password" minlength="8" required></div>
-      <div class="auth-error" id="regError"></div>
-      <button class="btn" type="submit">Create account</button>
+    <form id="setupForm" style="display:none;">
+      <p class="auth-note" style="margin-top:0;">No master admin account exists yet. Set one up now — this will be able to manage every department.</p>
+      <div class="field"><label for="setupName">Your name</label><input id="setupName" required></div>
+      <div class="field"><label for="setupUsername">Username</label><input id="setupUsername" autocomplete="username" required></div>
+      <div class="field"><label for="setupPassword">Password</label><input id="setupPassword" type="password" autocomplete="new-password" minlength="8" required></div>
+      <div class="auth-error" id="setupError"></div>
+      <button class="btn" type="submit">Create master admin account</button>
     </form>
-
-    <button class="link-btn" id="authToggle">I don't have an account &mdash; create one</button>
   </div>
 </div>
 
@@ -44,64 +44,105 @@
       <div class="brand"><span class="mark">🕒</span><h1>Shift Ledger</h1></div>
       <div class="who" id="whoBox"></div>
     </div>
-    <nav class="tabs" id="tabs">
-      <button class="tab-btn active" data-tab="mine">My Hours</button>
-      <button class="tab-btn" data-tab="team" id="teamTabBtn" style="display:none;">Team</button>
-    </nav>
+    <nav class="tabs" id="tabs"></nav>
   </header>
 
   <div class="wrap">
 
-    <section class="panel active" id="panel-mine">
-      <h2 class="section-title">Log your hours</h2>
-      <p class="section-sub">One entry per hour, 8:00 AM to 4:00 PM. Leave a slot blank if you didn't work it.</p>
+    <!-- ===== DEPARTMENT REP VIEW ===== -->
+    <section class="panel" id="panel-rep-log">
+      <h2 class="section-title">Log hours</h2>
+      <p class="section-sub">Pick a level, date, and hour, then log work for each chair.</p>
+
+      <div class="level-toggle" id="repLevelToggle"></div>
+
       <div class="controls-row">
-        <div class="field"><label for="mineDate">Date</label><input type="date" id="mineDate"></div>
+        <div class="field"><label for="repDate">Date</label><input type="date" id="repDate"></div>
+        <div class="field"><label for="repHour">Hour</label><select id="repHour"></select></div>
       </div>
-      <div id="mineLedger" class="ledger"><div class="loading-line">Loading your log&hellip;</div></div>
-      <div class="day-total" id="mineTotal" style="display:none;">
-        <span>Hours logged this day</span><strong id="mineTotalVal">0 / 8</strong>
+
+      <div id="repChairs"><div class="loading-line">Loading&hellip;</div></div>
+      <div class="day-total" id="repHourTotal" style="display:none;">
+        <span>Chairs logged this hour</span><strong id="repHourTotalVal">0 / 0</strong>
       </div>
     </section>
 
-    <section class="panel" id="panel-team">
+    <section class="panel" id="panel-rep-overview">
       <div class="export-row">
         <div>
-          <h2 class="section-title">Team hours</h2>
-          <p class="section-sub" style="margin-bottom:0;">See who logged what, by day, month, or person.</p>
+          <h2 class="section-title">Day overview</h2>
+          <p class="section-sub" style="margin-bottom:0;">Every hour and chair for one date, at a glance — edit any cell directly.</p>
         </div>
-        <div id="exportBox"></div>
+        <button class="btn export" id="repExportBtn">Export my department</button>
       </div>
 
-      <div class="subtabs" id="teamSubtabs">
+      <div class="level-toggle" id="repOverviewLevelToggle"></div>
+      <div class="controls-row">
+        <div class="field"><label for="repOverviewDate">Date</label><input type="date" id="repOverviewDate"></div>
+      </div>
+      <div id="repOverviewGrid"><div class="loading-line">Loading&hellip;</div></div>
+    </section>
+
+    <section class="panel" id="panel-rep-month">
+      <h2 class="section-title">Month overview</h2>
+      <p class="section-sub">Days worked and chairs filled, by month.</p>
+
+      <div class="level-toggle" id="repMonthLevelToggle"></div>
+      <div class="controls-row">
+        <div class="field"><label for="repMonth">Month</label><input type="month" id="repMonth"></div>
+      </div>
+      <div id="repMonthTable"><div class="loading-line">Loading&hellip;</div></div>
+    </section>
+
+    <!-- ===== MASTER ADMIN VIEW ===== -->
+    <section class="panel" id="panel-master-overview">
+      <div class="export-row">
+        <div>
+          <h2 class="section-title">All departments</h2>
+          <p class="section-sub" style="margin-bottom:0;">See what every department has logged.</p>
+        </div>
+        <button class="btn export" id="masterExportBtn">Export all departments</button>
+      </div>
+
+      <div class="level-toggle" id="masterLevelToggle"></div>
+      <div class="subtabs" id="masterSubtabs">
         <button class="active" data-sub="day">By day</button>
         <button data-sub="month">By month</button>
-        <button data-sub="employee">By employee</button>
-        <button data-sub="roles" id="rolesSubBtn" style="display:none;">Manage roles</button>
+        <button data-sub="department">By department</button>
       </div>
 
-      <div id="team-day" class="team-view">
-        <div class="controls-row"><div class="field"><label for="teamDate">Date</label><input type="date" id="teamDate"></div></div>
-        <div id="teamDayTable"><div class="loading-line">Loading&hellip;</div></div>
+      <div id="master-day" class="master-view">
+        <div class="controls-row"><div class="field"><label for="masterDate">Date</label><input type="date" id="masterDate"></div></div>
+        <div id="masterDayTable"><div class="loading-line">Loading&hellip;</div></div>
       </div>
 
-      <div id="team-month" class="team-view" style="display:none;">
-        <div class="controls-row"><div class="field"><label for="teamMonth">Month</label><input type="month" id="teamMonth"></div></div>
-        <div id="teamMonthTable"><div class="loading-line">Loading&hellip;</div></div>
+      <div id="master-month" class="master-view" style="display:none;">
+        <div class="controls-row"><div class="field"><label for="masterMonth">Month</label><input type="month" id="masterMonth"></div></div>
+        <div id="masterMonthTable"><div class="loading-line">Loading&hellip;</div></div>
       </div>
 
-      <div id="team-employee" class="team-view" style="display:none;">
+      <div id="master-department" class="master-view" style="display:none;">
         <div class="controls-row">
-          <div class="field"><label for="teamEmpSelect">Employee</label><select id="teamEmpSelect"><option>Loading&hellip;</option></select></div>
-          <div class="field"><label for="teamEmpMonth">Month</label><input type="month" id="teamEmpMonth"></div>
+          <div class="field"><label for="masterDeptSelect">Department</label><select id="masterDeptSelect"><option>Loading&hellip;</option></select></div>
+          <div class="field"><label for="masterDeptDate">Date</label><input type="date" id="masterDeptDate"></div>
         </div>
-        <div id="teamEmpTable"><div class="loading-line">Choose an employee to see their log.</div></div>
+        <div id="masterDeptGrid"><div class="loading-line">Choose a department to view its log.</div></div>
       </div>
+    </section>
 
-      <div id="team-roles" class="team-view" style="display:none;">
-        <p class="section-sub">Give someone admin access so they can view team hours, or move them back to employee.</p>
-        <div id="rolesTable"><div class="loading-line">Loading&hellip;</div></div>
-      </div>
+    <section class="panel" id="panel-master-settings">
+      <h2 class="section-title">Departments &amp; representatives</h2>
+      <p class="section-sub">Add departments, set how many UG and PG chairs each has, and manage each department's one representative login.</p>
+
+      <form id="addDeptForm" class="inline-form">
+        <div class="field"><label for="newDeptName">New department name</label><input id="newDeptName" placeholder="e.g. Physics" required></div>
+        <div class="field field-narrow"><label for="newDeptUg">UG chairs</label><input id="newDeptUg" type="number" min="0" max="200" value="0" required></div>
+        <div class="field field-narrow"><label for="newDeptPg">PG chairs</label><input id="newDeptPg" type="number" min="0" max="200" value="0" required></div>
+        <button class="btn" type="submit">Add department</button>
+      </form>
+      <div class="auth-error" id="addDeptError"></div>
+
+      <div id="deptSettingsList"><div class="loading-line">Loading&hellip;</div></div>
     </section>
 
   </div>
